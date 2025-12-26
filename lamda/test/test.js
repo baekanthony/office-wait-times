@@ -1,4 +1,4 @@
-const { handler } = require('./index');
+const { handler } = require('../index');
 
 handler({}, {})
   .then(response => {
