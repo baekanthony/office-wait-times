@@ -17,15 +17,14 @@ export const handler = async (event, context) => {
     try {
       const response = await fetch(`${url}/${id}`);
       const data = await response.json();
-      //waitTime might not be the correct key
-      if (data?.waitTime) {
+      if (data?.waitTimeManualSeconds) {
         await ddbDocClient.send(
           new PutCommand({
             TableName,
             Item: {
               id,
               officeName: data.officeName,
-              waitTime: data.waitTime,
+              waitTimeSeconds: data.waitTimeManualSeconds,
               date: reqTime
             },
           })
