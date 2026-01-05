@@ -1,10 +1,10 @@
-import WaitTimesTable from './components/WaitTimesTable';
+import OfficesTabs from './components/OfficesTabs';
 
 export default function Home() {
   return (
     <main>
       <h1>Office Wait Times</h1>
-      <WaitTimesTable />
+      <OfficesTabs />
     </main>
   );
 }

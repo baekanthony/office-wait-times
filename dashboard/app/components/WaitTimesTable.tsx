@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-
+//probably should be in own file
 interface WaitTime {
   officeId: string;
   officeName: string;
@@ -9,22 +8,7 @@ interface WaitTime {
   waitTimeSeconds: number;
 }
 
-export default function WaitTimesTable() {
-  const [waitTimes, setWaitTimes] = useState<WaitTime[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    //err handling?
-    fetch('/api/wait-times')
-      .then(res => res.json())
-      .then(data => {
-        setWaitTimes(data.items || []);
-        setLoading(false);
-      });
-  }, []);
-
-  if (loading) return <div>Loading</div>;
-
+export default function WaitTimesTable(waitTimes: WaitTime[]) {
   return (
     <div>
       <h1>Wait Times</h1>
