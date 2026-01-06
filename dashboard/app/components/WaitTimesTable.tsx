@@ -1,12 +1,5 @@
 "use client";
-
-//probably should be in own file
-interface WaitTime {
-  officeId: string;
-  officeName: string;
-  date: string;
-  waitTimeSeconds: number;
-}
+import { WaitTime } from "../types/waitTime";
 
 export default function WaitTimesTable(waitTimes: WaitTime[]) {
   return (

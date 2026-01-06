@@ -4,19 +4,12 @@ import * as React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
+import { WaitTime } from '../types/waitTime';
 
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
   value: number;
-}
-
-
-interface WaitTime {
-  officeId: string;
-  officeName: string;
-  date: string;
-  waitTimeSeconds: number;
 }
 
 function CustomTabPanel(props: TabPanelProps) {
