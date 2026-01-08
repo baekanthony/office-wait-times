@@ -63,23 +63,29 @@ export default function OfficesTabs() {
   if (loading) return <div>Loading</div>;
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: '100%', display: 'flex' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" orientation="vertical">
           {Array.from(waitTimesMap.entries()).map(([officeId, waitTimes], i) => (
             <Tab key={officeId} label={waitTimes[0]?.officeName || officeId} {...a11yProps(i)} />
           ))}
         </Tabs>
       </Box>
-      {Array.from(waitTimesMap.entries()).map(([officeId, waitTimes], i) => (
-        <CustomTabPanel key={officeId} value={value} index={i}>
-          {waitTimes.map(waitTime => (
-            <div key={waitTime.date}>
-              {waitTime.date}: {waitTime.waitTimeSeconds} seconds
-            </div>
-          ))}
-        </CustomTabPanel>
-      ))}
+      <Box>
+        <Tabs>
+          <Tab label="Average week" />
+          <Tab label="This week" />
+        </Tabs>
+        {Array.from(waitTimesMap.entries()).map(([officeId, waitTimes], i) => (
+          <CustomTabPanel key={officeId} value={value} index={i}>
+            {waitTimes.map(waitTime => (
+              <div key={waitTime.date}>
+                {waitTime.date}: {waitTime.waitTimeSeconds} seconds
+              </div>
+            ))}
+          </CustomTabPanel>
+        ))}
+      </Box>
     </Box>
   );
 }
