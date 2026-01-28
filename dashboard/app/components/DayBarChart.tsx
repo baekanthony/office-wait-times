@@ -2,6 +2,13 @@
 import { BarChart } from '@mui/x-charts/BarChart';
 import { WaitTimeData } from "../types/waitTime";
 
+function extractHour(hourStr: string) {
+  const hour = parseInt(hourStr.slice(-2))-10;
+  const hour12 = hour % 12 === 0 ? 12 : hour % 12;
+  const period = hour < 12 ? "am" : "pm"
+  return `${hour12}${period}`;
+}
+
 const chartSetting = {
   yAxis: [
     {
@@ -20,7 +27,7 @@ export default function DayBarChart({ waitTimes }: { waitTimes: WaitTimeData[] }
       <div>Data not found</div>
     )
   }
-  const hours = waitTimes.map(wt => wt.date);
+  const hours = waitTimes.map(wt => extractHour(wt.date));
   const waitTimesSecs = waitTimes.map(wt => wt.waitTimeSeconds / 60);
   return (
     <BarChart
