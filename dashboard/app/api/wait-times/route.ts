@@ -24,6 +24,7 @@ export async function GET(request: Request) {
           ':officeId': officeId,
         },
       };
+      //await?
       const result = await docClient.send(new QueryCommand(params));
       return NextResponse.json({ items: result.Items });
     } else {
