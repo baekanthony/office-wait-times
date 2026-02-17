@@ -47,6 +47,10 @@ export const handler = async (event, context) => {
     return data.error ? data : await insertWaitTime(data, officeId);
   }
 
+  function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   const firstData = await fetchWaitTimeAPI(officeIds[0]);
 
   //Should stop fetching since if 1 office is on holiday, all are
@@ -58,10 +62,15 @@ export const handler = async (event, context) => {
   }
   res.push(await handleFetchedData(firstData, officeIds[0]));
 
-  for (let i = 1; i < officeIds.length; i++) {
-    const data = await fetchWaitTimeAPI(officeIds[i]);
-    res.push(await handleFetchedData(data, officeIds[i]));
-  }
+  const promises = officeIds.slice(1).map((officeId, i) => {
+    const delayMs = (i + 1) * 60000;
+    return delay(delayMs).then(async () => {
+      const data = await fetchWaitTimeAPI(officeId);
+      res.push(await handleFetchedData(data, officeId));
+    });
+  });
+
+  await Promise.all(promises);
 
   return {
     statusCode: 200,
