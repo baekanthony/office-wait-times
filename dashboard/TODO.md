@@ -10,10 +10,10 @@ Components:
 Maybe consider a comparison view (office A vs B)
 
 Things to look into:
-- Seeding script for local dynamodb
 - Redis cache
 - Changes to scheduler
     - kinda useless to poll at 4 when it closes at 4
     - also office opens at 8:30
 - Predicted wait times? (Would be cool not sure how feasible)
+    - Meta prophet?
 

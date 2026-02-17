@@ -1,4 +1,4 @@
-import DayLineChart from './components/DayLineChart';
+import WaitTimeLineChart from './components/WaitTimeLineChart';
 import OfficesTabs from './components/OfficesTabs';
 import SummaryCard from './components/SummaryCard';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
@@ -53,7 +53,7 @@ export default function Home() {
       </div>
       {/* TODO: Should live inside a component that determins the input it gets */}
       <div style={{ width: "100%", height: 300 }}>
-        <DayLineChart data={data} series={series} />
+        <WaitTimeLineChart data={data} series={series} />
       </div>
     </div>
     </main>
