@@ -1,5 +1,5 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { DynamoDBDocumentClient, BatchWriteCommand } from "@aws-sdk/lib-dynamodb";
 import offices from './offices.json' with { type: "json" };
 
 export const handler = async (event, context) => {
@@ -11,7 +11,7 @@ export const handler = async (event, context) => {
   const client = new DynamoDBClient({ region });
   const ddbDocClient = DynamoDBDocumentClient.from(client);
 
-  let res = [];
+  const fetchResults = [];
   const curDate = new Date();
   const reqTime = curDate.toISOString().slice(0, 13);
 
@@ -25,25 +25,34 @@ export const handler = async (event, context) => {
     }
   }
 
-  async function insertWaitTime(data, officeId) {
-    if (data?.waitTimeManualSeconds) {
-      await ddbDocClient.send(
-        new PutCommand({
-          TableName,
+  function formatData(fetchResults) {
+    return fetchResults
+      .filter(result => !result.error && result?.waitTimeManualSeconds)
+      .map((data) => ({
+        PutRequest: {
           Item: {
-            officeId,
-            officeName: data.officeName, // TODO: Redundant
+            officeId: data.officeId,
             waitTimeSeconds: data.waitTimeManualSeconds,
-            date: reqTime
-          },
-        })
-      );
-      return `${officeId}:${reqTime} success`;
-    }
+            date: reqTime                        
+          }
+        }
+      }));
   }
 
-  async function handleFetchedData(data, officeId) {
-    return data.error ? data : await insertWaitTime(data, officeId);
+  async function batchWrite(batchItems) {
+    try {
+      const result = await ddbDocClient.send(
+        new BatchWriteCommand({
+          RequestItems: {
+            [TableName]: batchItems
+          }
+        })
+      );
+      return { success: true, unprocessedItems: result.UnprocessedItems };
+    } catch (err) {
+      console.error('Batch write failed:', err);
+      return { success: false, err: err.message };
+    }
   }
 
   const firstData = await fetchWaitTimeAPI(officeIds[0]);
@@ -56,16 +65,13 @@ export const handler = async (event, context) => {
       body: JSON.stringify({ msg: "Holiday, stopped fetches" }),
     };
   }
-  res.push(await handleFetchedData(firstData, officeIds[0]));
+  fetchResults.push(firstData);
 
   for (let i = 1; i < officeIds.length; i++) {
-    const data = await fetchWaitTimeAPI(officeIds[i]);
-    res.push(await handleFetchedData(data, officeIds[i]));
+    fetchResults.push(await fetchWaitTimeAPI(officeIds[i]));
   }
 
-  const requestItems = data.map(({data, officeId }))
-  // TODO: exponential backoff algorithm loop for unprocessdItems
-
+  const res = await batchWrite(formatData(fetchResults));
   return {
     statusCode: 200,
     body: JSON.stringify(res),
