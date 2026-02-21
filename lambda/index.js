@@ -31,7 +31,7 @@ export const handler = async (event, context) => {
       .map((data) => ({
         PutRequest: {
           Item: {
-            officeId: data.officeId,
+            officeId: data.posui,
             waitTimeSeconds: data.waitTimeManualSeconds,
             date: reqTime                        
           }
